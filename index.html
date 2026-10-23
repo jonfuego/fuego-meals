@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Meal Prep Thursday</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F1F4EF;--surface:#FFFFFF;--surface-2:#E7ECE5;--ink:#17211B;--muted:#56635A;--line:#D3DAD2;
+  --green:#2A7647;--green-ink:#FFFFFF;--green-soft:#DCEFE2;
+  --tag:#FFD23F;--tag-ink:#1A1A12;
+  --vons:#C8102E;--ralphs:#1F5BAA;--stater:#A9431A;--any:#66707A;
+  --shadow:0 1px 0 rgba(23,33,27,.06);
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#111613;--surface:#1A211D;--surface-2:#222B26;--ink:#E5ECE6;--muted:#9BA9A0;--line:#2E3933;
+    --green:#56B97D;--green-ink:#0D1510;--green-soft:#1F3627;
+    --vons:#FF7A8C;--ralphs:#80AEF2;--stater:#F2945F;--any:#A6AEB8;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111613;--surface:#1A211D;--surface-2:#222B26;--ink:#E5ECE6;--muted:#9BA9A0;--line:#2E3933;
+  --green:#56B97D;--green-ink:#0D1510;--green-soft:#1F3627;
+  --vons:#FF7A8C;--ralphs:#80AEF2;--stater:#F2945F;--any:#A6AEB8;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+.wrap{max-width:760px;margin:0 auto;padding:28px 18px 120px}
+.display{font-family:"Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:.005em}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--green);outline-offset:2px;border-radius:6px}
+
+/* Header */
+header{margin-bottom:26px}
+.week{display:inline-block;font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:700;font-size:1.05rem;background:var(--tag);color:var(--tag-ink);padding:2px 10px 1px;border-radius:3px;transform:rotate(-1.5deg)}
+h1{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:800;font-size:clamp(2.6rem,9vw,4.2rem);line-height:.92;margin:12px 0 12px;letter-spacing:-.01em}
+.lede{max-width:60ch;color:var(--muted);margin:0}
+.lede strong{color:var(--ink)}
+
+/* Meal cards */
+.meals{display:flex;flex-direction:column;gap:14px;margin-top:8px}
+.meal{position:relative;background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:16px 16px 14px;box-shadow:var(--shadow);transition:border-color .15s}
+.meal.picked{border-color:var(--green)}
+.meal-top{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:start}
+.meal h2{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:700;font-size:1.6rem;line-height:1.02;margin:0 0 4px}
+.blurb{margin:0;color:var(--muted);font-size:.95rem;max-width:52ch}
+.stats{display:flex;gap:18px;margin:12px 0 0;padding:0;flex-wrap:wrap}
+.stats div{display:flex;flex-direction:column}
+.stats dt{font-size:.75rem;color:var(--muted)}
+.stats dd{margin:0;font-weight:700;font-size:.95rem}
+.stores{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:10px;font-size:.82rem;color:var(--muted)}
+.stores span{display:inline-flex;align-items:center;gap:5px}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none}
+
+/* Shelf tag: the one loud thing */
+.tag{position:relative;background:var(--tag);color:var(--tag-ink);border-radius:4px 4px 4px 4px;padding:8px 12px 7px 14px;min-width:96px;text-align:right;clip-path:polygon(10px 0,100% 0,100% 100%,10px 100%,0 50%)}
+.tag .amt{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:800;font-size:2.1rem;line-height:.9;display:block}
+.tag .amt sup{font-size:.5em;vertical-align:.75em;margin-right:1px}
+.tag .per{font-size:.72rem;display:block;font-weight:700}
+.tag .tot{font-size:.72rem;display:block;opacity:.8}
+
+.actions{display:flex;gap:10px;margin-top:14px;align-items:center;flex-wrap:wrap}
+.pick{border:2px solid var(--green);background:transparent;color:var(--green);font-weight:700;padding:9px 16px;border-radius:999px;cursor:pointer;min-height:44px}
+.picked .pick{background:var(--green);color:var(--green-ink)}
+.recipe-btn{background:none;border:none;color:var(--muted);text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:10px 4px;min-height:44px}
+.recipe{display:none;margin-top:12px;border-top:1px dashed var(--line);padding-top:12px}
+.meal.open .recipe{display:block}
+.recipe h3{font-size:.85rem;margin:0 0 6px;color:var(--muted);font-weight:700}
+.recipe ul,.recipe ol{margin:0 0 12px;padding-left:20px}
+.recipe li{margin:3px 0}
+.recipe .note{font-size:.88rem;color:var(--muted);margin:0 0 10px}
+
+/* Add-ons */
+.addons{margin-top:28px;background:var(--surface-2);border-radius:14px;padding:16px}
+.addons h2,.list-head h2{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:700;font-size:1.5rem;margin:0 0 2px;line-height:1.05}
+.addons p{margin:0 0 10px;color:var(--muted);font-size:.92rem}
+.addon{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);cursor:pointer}
+.addon:first-of-type{border-top:none}
+.addon input{width:22px;height:22px;accent-color:var(--green);flex:none}
+.addon .nm{flex:1}
+.addon .pr{font-weight:700;white-space:nowrap}
+
+/* Shopping list */
+#list{margin-top:40px}
+.list-head{display:flex;justify-content:space-between;align-items:end;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.list-head p{margin:0;color:var(--muted);font-size:.92rem}
+.list-tools{display:flex;gap:8px}
+.tool{border:1.5px solid var(--line);background:var(--surface);padding:8px 12px;border-radius:999px;cursor:pointer;font-size:.88rem;min-height:40px}
+.empty{background:var(--surface);border:2px dashed var(--line);border-radius:14px;padding:26px 18px;text-align:center;color:var(--muted)}
+.store{background:var(--surface);border-radius:14px;margin-bottom:14px;overflow:hidden;border:1px solid var(--line)}
+.store-h{display:flex;justify-content:space-between;align-items:baseline;padding:12px 16px;border-left:6px solid var(--c)}
+.store-h h3{margin:0;font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:700;font-size:1.35rem;color:var(--c)}
+.store-h .sub{font-weight:700}
+.store-note{padding:0 16px 6px 22px;font-size:.8rem;color:var(--muted);margin-top:-6px}
+.sec{padding:4px 16px 10px 22px}
+.sec h4{margin:8px 0 2px;font-size:.8rem;color:var(--muted);font-weight:700}
+.item{display:grid;grid-template-columns:28px 1fr auto;gap:8px;align-items:start;padding:8px 0;border-top:1px solid var(--line);cursor:pointer}
+.sec h4+.item{border-top:none}
+.item input{width:22px;height:22px;margin:1px 0 0;accent-color:var(--green)}
+.item .nm{font-weight:700}
+.item .qty{font-weight:400;color:var(--muted)}
+.item .for{display:block;font-size:.8rem;color:var(--muted);font-weight:400}
+.item .pr{text-align:right;white-space:nowrap}
+.item .deal{display:block;font-size:.75rem;color:var(--muted)}
+.item.done .nm,.item.done .pr{text-decoration:line-through;opacity:.5}
+.item.opt .nm::after{content:" (optional)";font-weight:400;color:var(--muted)}
+.pantry{background:var(--surface-2);border-radius:14px;padding:14px 16px;margin-top:4px}
+.pantry h3{margin:0 0 4px;font-size:1rem}
+.pantry p{margin:0;color:var(--muted);font-size:.92rem}
+.foot{margin-top:28px;font-size:.82rem;color:var(--muted);max-width:62ch}
+.foot p{margin:0 0 8px}
+
+/* Sticky bar */
+.bar{position:fixed;left:0;right:0;bottom:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line);z-index:20}
+.bar-in{max-width:760px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.slots{display:flex;gap:6px;align-items:center}
+.slot{width:26px;height:26px;border-radius:6px;border:2px dashed var(--line)}
+.slot.on{background:var(--green);border:2px solid var(--green)}
+.bar-txt{font-size:.9rem;margin-left:8px}
+.bar-txt strong{font-size:1.05rem}
+.go{background:var(--ink);color:var(--bg);border:none;border-radius:999px;padding:11px 18px;font-weight:700;cursor:pointer;min-height:44px;text-decoration:none;white-space:nowrap}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(12px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:.9rem;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:30;max-width:calc(100% - 32px)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media (max-width:420px){.tag{min-width:84px}.tag .amt{font-size:1.8rem}.meal h2{font-size:1.4rem}.bar-txt span{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="week" id="week-label"></span>
+    <h1>Meal Prep Thursday</h1>
+    <p class="lede"><span id="lede-intro"></span> Each one serves 4, leans on lean protein and vegetables, and keeps fats light, since heavy, greasy meals tend to sit worst on GLP-1 meds. <strong>Pick four and your shopping list builds below.</strong></p>
+  </header>
+
+  <main>
+    <div class="meals" id="meals"></div>
+
+    <section class="addons" aria-labelledby="addons-h">
+      <h2 id="addons-h">Protein extras on sale</h2>
+      <p>Easy snacks and small meals for days when appetite is low. Tap to add to your list.</p>
+      <div id="addons"></div>
+    </section>
+
+    <section id="list" aria-labelledby="list-h">
+      <div class="list-head">
+        <div>
+          <h2 id="list-h">Shopping list</h2>
+          <p id="list-sum">Grouped by store, then by aisle.</p>
+        </div>
+        <div class="list-tools">
+          <button class="tool" id="copy">Copy list</button>
+          <button class="tool" id="clear">Uncheck all</button>
+        </div>
+      </div>
+      <div id="list-body"></div>
+    </section>
+
+    <div class="foot" id="foot"></div>
+  </main>
+</div>
+
+<nav class="bar" aria-label="Your picks">
+  <div class="bar-in">
+    <div class="slots" aria-hidden="true"><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i></div>
+    <div class="bar-txt" id="bar-txt"></div>
+    <a class="go" href="#list">See list</a>
+  </div>
+</nav>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ==== DATA:START (the only block that changes each week) ==== */
+const WEEK = "2026-10-21";            // ad start date (Wednesday), also the saved-state key
+const WEEK_LABEL = "Week of Oct 21–27";
+const LEDE_INTRO = "Seven low-carb dinners built from this week’s Vons, Ralphs, Stater Bros. and Sprouts ads.";
+const FOOT_NOTES = [
+  "Sale prices come from each store’s Oct 21–27 weekly ad. Vons prices assume club card pricing. Items marked ~ aren’t on sale and are estimates. Prices and stock vary by location.",
+  "Sprouts didn’t beat the other three on anything these meals need this week. Its best protein deal was wild mahi mahi at $8.99/lb.",
+  "Protein and net-carb numbers are rough per-serving estimates."
+];
+const MAX = 4;
+
+const STORES = {
+  vons:   { name: "Vons",         color: "var(--vons)",   note: "Club card prices." },
+  ralphs: { name: "Ralphs",       color: "var(--ralphs)", note: "" },
+  stater: { name: "Stater Bros.", color: "var(--stater)", note: "" },
+  any:    { name: "Any store",    color: "var(--any)",    note: "Not on sale anywhere this week; grab these wherever you stop." }
+};
+const STORE_ORDER = ["vons", "ralphs", "stater", "any"];
+const SECTIONS = ["Produce", "Meat & seafood", "Dairy", "Frozen", "Pantry"];
+
+// unit: "lb" (price per lb, qty in lb) or "ea" (price each, fractional use rounds up)
+const ITEMS = {
+  vons_thighs:   { name: "Signature SELECT chicken thighs, bone-in", store: "vons", sec: "Meat & seafood", unit: "lb", price: 0.99, deal: "$0.99/lb" },
+  vons_shrimp:   { name: "Waterfront Bistro raw shrimp, peeled & deveined, 31–40 ct", store: "vons", sec: "Meat & seafood", unit: "lb", price: 5.00, deal: "$5.00/lb" },
+  vons_turkey:   { name: "Butterball ground turkey, 48 oz", store: "vons", sec: "Meat & seafood", unit: "ea", price: 8.97, deal: "$2.99/lb" },
+  vons_chops:    { name: "Pork loin end chops, bone-in", store: "vons", sec: "Meat & seafood", unit: "lb", price: 1.99, deal: "$1.99/lb" },
+  vons_onion:    { name: "Brown or white onions", store: "vons", sec: "Produce", unit: "lb", price: 0.99, deal: "$0.99/lb" },
+  vons_roastveg: { name: "PictSweet Farms vegetables for roasting, 11–18 oz", store: "vons", sec: "Frozen", unit: "ea", price: 1.99, deal: "$1.99 ea" },
+  vons_broc:     { name: "PictSweet Steam’ables broccoli, 10 oz", store: "vons", sec: "Frozen", unit: "ea", price: 1.49, deal: "$1.49 ea" },
+  vons_gb:       { name: "PictSweet Steam’ables green beans, 10 oz", store: "vons", sec: "Frozen", unit: "ea", price: 1.49, deal: "$1.49 ea" },
+  vons_cauli:    { name: "PictSweet Steam’ables cauliflower, 10 oz", store: "vons", sec: "Frozen", unit: "ea", price: 1.49, deal: "$1.49 ea" },
+  vons_cheese:   { name: "Tillamook shredded cheese, 6–10 oz", store: "vons", sec: "Dairy", unit: "ea", price: 2.50, deal: "2 for $5" },
+  vons_tort:     { name: "Mission Net Zero Carb tortillas, 8 ct", store: "vons", sec: "Pantry", unit: "ea", price: 4.99, deal: "$4.99" },
+  ralphs_squash: { name: "Spaghetti squash, about 3½ lb", store: "ralphs", sec: "Produce", unit: "lb", price: 1.79, deal: "$1.79/lb" },
+  ralphs_sauce:  { name: "Bertolli pasta sauce, 24 oz", store: "ralphs", sec: "Pantry", unit: "ea", price: 1.99, deal: "$1.99" },
+  ralphs_parm:   { name: "Kroger shredded Parmesan, 6–8 oz", store: "ralphs", sec: "Dairy", unit: "ea", price: 1.99, deal: "$1.99" },
+  ralphs_steak:  { name: "Kroger beef shaved steak", store: "ralphs", sec: "Meat & seafood", unit: "ea", price: 5.00, deal: "2 for $10" },
+  stater_pep:    { name: "Mixed bell peppers, bagged", store: "stater", sec: "Produce", unit: "ea", price: 4.99, deal: "$4.99" },
+  stater_salad:  { name: "Stater Bros. salad blend", store: "stater", sec: "Produce", unit: "ea", price: 1.99, deal: "$1.99" },
+  stater_avo:    { name: "Medium Hass avocados", store: "stater", sec: "Produce", unit: "ea", price: 0.99, deal: "99¢ ea" },
+  stater_rotel:  { name: "Rotel diced tomatoes, 10 oz", store: "stater", sec: "Pantry", unit: "ea", price: 1.25, deal: "$1.25" },
+  stater_fish:   { name: "Tilapia or swai fillets", store: "stater", sec: "Meat & seafood", unit: "lb", price: 4.99, deal: "$4.99/lb" },
+  any_lemon:     { name: "Lemons", store: "any", sec: "Produce", unit: "ea", price: 0.75, est: true },
+  any_lime:      { name: "Limes", store: "any", sec: "Produce", unit: "ea", price: 0.50, est: true },
+  any_caulirice: { name: "Frozen riced cauliflower, 12 oz", store: "any", sec: "Frozen", unit: "ea", price: 2.99, est: true },
+  // add-ons
+  add_cottage:   { name: "Lucerne cottage cheese, 24 oz", store: "vons", sec: "Dairy", unit: "ea", price: 3.99, deal: "$3.99" },
+  add_yogurt:    { name: "Dannon Greek yogurt, 32 oz", store: "vons", sec: "Dairy", unit: "ea", price: 4.99, deal: "$4.99" },
+  add_tuna:      { name: "StarKist chunk light tuna, 5 oz cans", store: "vons", sec: "Pantry", unit: "ea", price: 0.99, deal: "99¢ ea" },
+  add_shakes:    { name: "Premier Protein shakes, 12 ct", store: "vons", sec: "Pantry", unit: "ea", price: 19.99, deal: "$19.99" }
+};
+
+const ADDONS = [
+  { id: "add_cottage", qty: 1 },
+  { id: "add_yogurt", qty: 1 },
+  { id: "add_tuna", qty: 4 },
+  { id: "add_shakes", qty: 1 }
+];
+
+const MEALS = [
+  {
+    id: "chicken", name: "Sheet-pan lemon garlic chicken thighs",
+    blurb: "One pan, mostly hands-off. Skinless thighs and roasted vegetables with lemon and oregano.",
+    time: "45 min", protein: "~38 g", carbs: "~10 g",
+    items: [["vons_thighs", 4], ["vons_roastveg", 2], ["vons_onion", 1], ["any_lemon", 2]],
+    pantry: ["Olive oil", "Garlic powder", "Dried oregano"],
+    steps: [
+      "Heat oven to 425°F. Pull the skin off the thighs.",
+      "Toss thighs, onion wedges and the frozen roasting vegetables with 2 tbsp olive oil, zest of 1 lemon, 2 tsp garlic powder, 1 tsp oregano, salt and pepper.",
+      "Spread on a sheet pan (use two if crowded). Roast 35–40 min, until the chicken reaches 175°F.",
+      "Squeeze the lemons over everything before serving."
+    ]
+  },
+  {
+    id: "shrimp", name: "Garlic shrimp & broccoli stir-fry",
+    blurb: "Fastest meal of the week. Served over cauliflower rice instead of white rice.",
+    time: "20 min", protein: "~35 g", carbs: "~10 g",
+    items: [["vons_shrimp", 2], ["vons_broc", 2], ["any_caulirice", 2]],
+    pantry: ["Soy sauce", "Fresh garlic", "Ground ginger", "Olive oil", "Red pepper flakes"],
+    steps: [
+      "If frozen, thaw the shrimp in a colander under cold running water, about 5 min. Pat dry.",
+      "Microwave the broccoli and cauliflower rice per the bag directions.",
+      "Heat 1 tbsp oil over high heat. Add shrimp, 3 minced garlic cloves and 1 tsp ginger; cook 2 min per side.",
+      "Add the broccoli and 3 tbsp soy sauce and toss for 1 min. Serve over cauliflower rice with red pepper flakes if you like."
+    ]
+  },
+  {
+    id: "tacos", name: "Turkey taco bowls",
+    blurb: "Seasoned ground turkey over greens with avocado and cheese. Tortillas optional.",
+    time: "20 min", protein: "~34 g", carbs: "~8 g",
+    items: [["vons_turkey", 0.5], ["stater_salad", 2], ["stater_avo", 2], ["stater_rotel", 1], ["vons_cheese", 1], ["vons_tort", 1, true]],
+    pantry: ["Chili powder", "Ground cumin", "Garlic powder"],
+    note: "Uses half the 48 oz turkey pack. The other half covers the bolognese, or freeze it.",
+    steps: [
+      "Brown 1½ lb ground turkey in a large skillet over medium-high, about 8 min.",
+      "Stir in 1 tbsp chili powder, 1 tsp cumin, 1 tsp garlic powder and the Rotel with its juice. Simmer 5 min.",
+      "Build bowls: salad blend, turkey, sliced avocado, shredded cheese. Wrap in a zero-carb tortilla if you prefer."
+    ]
+  },
+  {
+    id: "bolognese", name: "Turkey bolognese over spaghetti squash",
+    blurb: "Comfort food without the pasta. The squash cooks in the microwave while the sauce simmers.",
+    time: "30 min", protein: "~32 g", carbs: "~16 g",
+    items: [["vons_turkey", 0.5], ["ralphs_squash", 3.5], ["ralphs_sauce", 1], ["vons_onion", 0.5], ["ralphs_parm", 1]],
+    pantry: ["Italian seasoning", "Fresh garlic"],
+    note: "Uses half the 48 oz turkey pack. The other half covers the taco bowls, or freeze it.",
+    steps: [
+      "Halve the squash lengthwise and scoop out the seeds. Microwave cut-side down in a dish with ½ inch of water for 12–15 min, until a fork slides in easily.",
+      "Meanwhile, brown 1½ lb ground turkey with ½ diced onion and 2 cloves garlic, about 8 min.",
+      "Add the sauce and 1 tsp Italian seasoning. Simmer 10 min.",
+      "Scrape the squash into strands with a fork. Top with sauce and Parmesan."
+    ]
+  },
+  {
+    id: "fajitas", name: "Shaved steak fajita bowls",
+    blurb: "Thin-shaved beef cooks in about 3 minutes. Peppers, onions, avocado and lime over greens.",
+    time: "20 min", protein: "~34 g", carbs: "~10 g",
+    items: [["ralphs_steak", 2], ["stater_pep", 1], ["vons_onion", 1], ["stater_avo", 2], ["any_lime", 2], ["stater_salad", 1]],
+    pantry: ["Chili powder", "Ground cumin", "Olive oil"],
+    steps: [
+      "Slice the peppers and onion into strips.",
+      "Sear them in 1 tbsp oil over high heat for 5–6 min, until charred at the edges. Move to a plate.",
+      "In the same pan, cook the shaved steak with 2 tsp chili powder, 1 tsp cumin and salt for 3–4 min.",
+      "Build bowls: greens, steak, peppers and onions, sliced avocado, a squeeze of lime."
+    ]
+  },
+  {
+    id: "pork", name: "Dijon pork chops with green beans & cauliflower mash",
+    blurb: "The cheapest meal on the list. Seared chops with a microwave mash and green beans.",
+    time: "25 min", protein: "~36 g", carbs: "~8 g",
+    items: [["vons_chops", 2.5], ["vons_gb", 2], ["vons_cauli", 2]],
+    pantry: ["Dijon mustard", "Garlic powder", "Paprika", "Butter", "Olive oil"],
+    steps: [
+      "Rub the chops with 1 tbsp Dijon, 1 tsp garlic powder, 1 tsp paprika, salt and pepper.",
+      "Sear in an oiled skillet over medium-high, 4–5 min per side, until 145°F. Rest 5 min.",
+      "Microwave the cauliflower, then mash with 1 tbsp butter, salt and pepper.",
+      "Microwave the green beans and serve everything together."
+    ]
+  },
+  {
+    id: "fish", name: "Lemon paprika baked fish with roasted peppers",
+    blurb: "Mild white fish and sweet peppers on one pan, with a side salad.",
+    time: "25 min", protein: "~40 g", carbs: "~9 g",
+    items: [["stater_fish", 2], ["stater_pep", 1], ["stater_salad", 1], ["any_lemon", 1]],
+    pantry: ["Paprika", "Garlic powder", "Olive oil"],
+    steps: [
+      "Heat oven to 425°F. Slice the peppers, toss with oil and salt, and roast for 10 min.",
+      "Push the peppers to the side. Add the fish, brush with oil, and season with paprika, garlic powder and salt. Lay lemon slices on top.",
+      "Roast 10–12 min, until the fish flakes easily. Serve with the salad blend."
+    ]
+  }
+];
+
+/* ==== DATA:END ==== */
+
+/* ---------- state ---------- */
+const KEY = "mpt-" + WEEK;
+let state = { picks: [], checks: {}, addons: [], open: [] };
+try { const s = JSON.parse(localStorage.getItem(KEY) || "null"); if (s) state = Object.assign(state, s); } catch (e) {}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+const money = n => "$" + n.toFixed(2);
+const fmtQty = n => (Math.round(n * 100) / 100).toString().replace(/\.0+$/, "");
+function lineCost(id, qty) { return ITEMS[id].price * qty; }
+function mealCost(m) { return m.items.filter(x => !x[2]).reduce((s, [id, q]) => s + lineCost(id, q), 0); }
+function mealStores(m) { return STORE_ORDER.filter(st => st !== "any" && m.items.some(([id]) => ITEMS[id].store === st)); }
+
+/* ---------- render meals ---------- */
+function tagHTML(total) {
+  const per = total / 4, d = Math.floor(per), c = Math.round((per - d) * 100).toString().padStart(2, "0");
+  return `<div class="tag" aria-label="${money(per)} per serving, ${money(total)} total">
+    <span class="amt"><sup>$</sup>${d}.${c}</span><span class="per">per serving</span><span class="tot">${money(total)} total</span></div>`;
+}
+function renderMeals() {
+  const el = document.getElementById("meals");
+  el.innerHTML = MEALS.map(m => {
+    const picked = state.picks.includes(m.id), open = state.open.includes(m.id);
+    const ingr = m.items.map(([id, q, opt]) => {
+      const it = ITEMS[id];
+      const qty = it.unit === "lb" ? `${fmtQty(q)} lb` : (q < 1 ? `½ pack` : `${q}`);
+      return `<li>${qty} ${it.name}${opt ? " (optional)" : ""}</li>`;
+    }).join("");
+    return `<article class="meal${picked ? " picked" : ""}${open ? " open" : ""}" data-id="${m.id}">
+      <div class="meal-top">
+        <div>
+          <h2>${m.name}</h2>
+          <p class="blurb">${m.blurb}</p>
+          <dl class="stats">
+            <div><dt>Time</dt><dd>${m.time}</dd></div>
+            <div><dt>Protein</dt><dd>${m.protein}</dd></div>
+            <div><dt>Net carbs</dt><dd>${m.carbs}</dd></div>
+          </dl>
+          <div class="stores">${mealStores(m).map(s => `<span><i class="dot" style="background:${STORES[s].color}"></i>${STORES[s].name}</span>`).join("")}</div>
+        </div>
+        ${tagHTML(mealCost(m))}
+      </div>
+      <div class="actions">
+        <button class="pick" aria-pressed="${picked}">${picked ? "Picked" : "Pick this meal"}</button>
+        <button class="recipe-btn" aria-expanded="${open}">${open ? "Hide recipe" : "Show recipe"}</button>
+      </div>
+      <div class="recipe">
+        ${m.note ? `<p class="note">${m.note}</p>` : ""}
+        <h3>Ingredients</h3><ul>${ingr}</ul>
+        <h3>Steps</h3><ol>${m.steps.map(s => `<li>${s}</li>`).join("")}</ol>
+        <h3>From your pantry</h3><p class="note" style="margin:0">${m.pantry.join(", ")}, salt, pepper</p>
+      </div>
+    </article>`;
+  }).join("");
+}
+
+function renderAddons() {
+  document.getElementById("addons").innerHTML = ADDONS.map(a => {
+    const it = ITEMS[a.id], on = state.addons.includes(a.id);
+    return `<label class="addon"><input type="checkbox" data-addon="${a.id}" ${on ? "checked" : ""}>
+      <span class="nm">${a.qty > 1 ? a.qty + " × " : ""}${it.name} <span style="color:var(--muted)">at Vons</span></span>
+      <span class="pr">${it.deal}</span></label>`;
+  }).join("");
+}
+
+/* ---------- build list ---------- */
+function buildList() {
+  const agg = {};
+  const add = (id, q, opt, label) => {
+    const a = agg[id] || (agg[id] = { q: 0, opt: true, uses: [] });
+    a.q += q; if (!opt) a.opt = false; if (label && !a.uses.includes(label)) a.uses.push(label);
+  };
+  state.picks.forEach(pid => {
+    const m = MEALS.find(x => x.id === pid);
+    m.items.forEach(([id, q, opt]) => add(id, q, !!opt, m.name));
+  });
+  state.addons.forEach(id => { const a = ADDONS.find(x => x.id === id); add(id, a.qty, false, "Protein extras"); });
+  Object.entries(agg).forEach(([id, a]) => { if (ITEMS[id].unit === "ea") a.q = Math.ceil(a.q - 1e-9); });
+  return agg;
+}
+
+function renderList() {
+  const agg = buildList(), body = document.getElementById("list-body");
+  const ids = Object.keys(agg);
+  if (!ids.length) {
+    body.innerHTML = `<div class="empty">Pick meals above and your list fills in here, sorted by store and aisle.</div>`;
+    document.getElementById("list-sum").textContent = "Grouped by store, then by aisle.";
+    renderBar(0); return 0;
+  }
+  let grand = 0, html = "";
+  STORE_ORDER.forEach(st => {
+    const sids = ids.filter(id => ITEMS[id].store === st);
+    if (!sids.length) return;
+    const sub = sids.filter(id => !agg[id].opt).reduce((s, id) => s + lineCost(id, agg[id].q), 0);
+    grand += sub;
+    html += `<div class="store" style="--c:${STORES[st].color}">
+      <div class="store-h"><h3>${STORES[st].name}</h3><span class="sub">${st === "any" ? "~" : ""}${money(sub)}</span></div>
+      ${STORES[st].note ? `<div class="store-note">${STORES[st].note}</div>` : ""}`;
+    SECTIONS.forEach(sec => {
+      const rows = sids.filter(id => ITEMS[id].sec === sec);
+      if (!rows.length) return;
+      html += `<div class="sec"><h4>${sec}</h4>`;
+      rows.forEach(id => {
+        const it = ITEMS[id], a = agg[id], done = !!state.checks[id];
+        const qty = it.unit === "lb" ? `${fmtQty(a.q)} lb` : `× ${a.q}`;
+        html += `<label class="item${done ? " done" : ""}${a.opt ? " opt" : ""}">
+          <input type="checkbox" data-check="${id}" ${done ? "checked" : ""}>
+          <span><span class="nm">${it.name}</span> <span class="qty">${qty}</span><span class="for">${a.uses.join("; ")}</span></span>
+          <span class="pr">${it.est ? "~" : ""}${money(lineCost(id, a.q))}${it.deal ? `<span class="deal">${it.deal}</span>` : ""}</span>
+        </label>`;
+      });
+      html += `</div>`;
+    });
+    html += `</div>`;
+  });
+  const pantry = [...new Set(state.picks.flatMap(pid => MEALS.find(m => m.id === pid).pantry))].sort();
+  if (pantry.length) html += `<div class="pantry"><h3>Check your pantry</h3><p>${pantry.join(", ")}, salt, pepper</p></div>`;
+  body.innerHTML = html;
+  const n = state.picks.length;
+  document.getElementById("list-sum").textContent = `${n} meal${n === 1 ? "" : "s"}, about ${money(grand)} before tax.`;
+  renderBar(grand); return grand;
+}
+
+function renderBar(total) {
+  const n = state.picks.length;
+  document.querySelectorAll(".slot").forEach((s, i) => s.classList.toggle("on", i < n));
+  document.getElementById("bar-txt").innerHTML = n
+    ? `<strong>${money(total)}</strong> <span>for ${n} of ${MAX} meals</span>`
+    : `<strong>0 of ${MAX}</strong> <span>meals picked</span>`;
+}
+
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), 2200);
+}
+
+/* ---------- events ---------- */
+document.getElementById("meals").addEventListener("click", e => {
+  const card = e.target.closest(".meal"); if (!card) return;
+  const id = card.dataset.id;
+  if (e.target.closest(".pick")) {
+    if (state.picks.includes(id)) state.picks = state.picks.filter(x => x !== id);
+    else if (state.picks.length >= MAX) { toast("You’ve picked 4. Unpick one to swap it out."); return; }
+    else state.picks.push(id);
+    save(); renderMeals(); renderList();
+  } else if (e.target.closest(".recipe-btn")) {
+    state.open = state.open.includes(id) ? state.open.filter(x => x !== id) : [...state.open, id];
+    save(); renderMeals();
+  }
+});
+document.getElementById("addons").addEventListener("change", e => {
+  const id = e.target.dataset.addon; if (!id) return;
+  state.addons = e.target.checked ? [...state.addons, id] : state.addons.filter(x => x !== id);
+  save(); renderList();
+});
+document.getElementById("list-body").addEventListener("change", e => {
+  const id = e.target.dataset.check; if (!id) return;
+  state.checks[id] = e.target.checked; save();
+  e.target.closest(".item").classList.toggle("done", e.target.checked);
+});
+document.getElementById("clear").addEventListener("click", () => { state.checks = {}; save(); renderList(); toast("All items unchecked."); });
+document.getElementById("copy").addEventListener("click", async () => {
+  const agg = buildList(); const ids = Object.keys(agg);
+  if (!ids.length) { toast("Pick a meal first, then copy."); return; }
+  let txt = "Meal Prep Thursday, " + WEEK_LABEL + "\n";
+  STORE_ORDER.forEach(st => {
+    const sids = ids.filter(id => ITEMS[id].store === st); if (!sids.length) return;
+    txt += `\n${STORES[st].name}\n`;
+    SECTIONS.forEach(sec => sids.filter(id => ITEMS[id].sec === sec).forEach(id => {
+      const it = ITEMS[id], a = agg[id];
+      txt += `[ ] ${it.name} ${it.unit === "lb" ? fmtQty(a.q) + " lb" : "x" + a.q}${a.opt ? " (optional)" : ""}\n`;
+    }));
+  });
+  try { await navigator.clipboard.writeText(txt); toast("List copied."); }
+  catch (err) {
+    const ta = document.createElement("textarea"); ta.value = txt; document.body.appendChild(ta); ta.select();
+    let ok = false; try { ok = document.execCommand("copy"); } catch (e2) {}
+    ta.remove(); toast(ok ? "List copied." : "Copy is blocked here. Long-press the list to select it instead.");
+  }
+});
+
+document.getElementById("week-label").textContent = WEEK_LABEL;
+document.getElementById("lede-intro").textContent = LEDE_INTRO;
+document.getElementById("foot").innerHTML = FOOT_NOTES.map(n => `<p>${n}</p>`).join("");
+document.title = "Meal Prep Thursday: " + WEEK_LABEL.replace(/^Week of /, "");
+renderMeals(); renderAddons(); renderList();
+</script>
+</body>
+</html>
